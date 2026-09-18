@@ -1,6 +1,6 @@
 {{--
 ==============================================================================
-Tujuan: Halaman daftar penugasan guru ke mata pelajaran dan kelas.
+Tujuan: Halaman daftar penugasan guru ke mata pelajaran dan kelas (multi-mapel & multi-kelas).
 Dipakai Oleh: Admin\TeachingAssignmentController@index (Route /admin/assignments)
 Dependensi: layouts.app, TeachingAssignment model
 Fungsi Utama: Menampilkan tabel penugasan aktif dan opsi pembatalan penugasan
@@ -18,10 +18,10 @@ Side Effect: Menampilkan list data teaching_assignments
         <div>
             <h3>Penugasan Mengajar Aktif</h3>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
-                Satu guru dapat mengampu satu mata pelajaran pada satu atau beberapa kelas sekaligus.
+                Satu guru dapat mengampu beberapa mata pelajaran sekaligus pada satu atau beberapa kelas.
             </p>
         </div>
-        <a href="{{ route('admin.assignments.create') }}" class="btn btn-primary">➕ Daftarkan Guru ke Mapel</a>
+        <a href="{{ route('admin.assignments.create') }}" class="btn btn-primary">➕ Daftarkan Guru ke Mapel & Kelas</a>
     </div>
 
     <div class="table-responsive">

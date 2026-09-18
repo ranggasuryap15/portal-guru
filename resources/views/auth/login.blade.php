@@ -1,9 +1,9 @@
 {{--
 ==============================================================================
-Tujuan: Halaman formulir login untuk Administrator dan Guru.
+Tujuan: Halaman formulir login responsif mobile untuk Administrator dan Guru.
 Dipakai Oleh: AuthController@showLoginForm (Route /login)
 Dependensi: Blade Engine, CSRF Token
-Fungsi Utama: Input email & password, remember me, pengiriman credential POST /login
+Fungsi Utama: Input email & password touch-friendly, remember me, POST /login credential
 Side Effect: Menampilkan pesan error validasi atau alert logout
 ==============================================================================
 --}}
@@ -176,6 +176,58 @@ Side Effect: Menampilkan pesan error validasi atau alert logout
             border-radius: 4px;
             font-family: monospace;
             color: #0f172a;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .login-card {
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            }
+
+            .card-header {
+                padding: 24px 20px 18px;
+            }
+
+            .brand-icon {
+                width: 46px;
+                height: 46px;
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .card-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .card-body {
+                padding: 20px 16px;
+            }
+
+            /* Mencegah iOS Safari auto-zoom dengan font-size min 16px */
+            input[type="email"],
+            input[type="password"] {
+                font-size: 16px;
+                padding: 12px 14px;
+                min-height: 44px;
+            }
+
+            .btn-submit {
+                min-height: 46px;
+                font-size: 1rem;
+            }
+
+            .form-checkbox {
+                padding: 4px 0;
+                font-size: 0.9rem;
+            }
+
+            .demo-accounts div {
+                word-break: break-all;
+            }
         }
     </style>
 </head>

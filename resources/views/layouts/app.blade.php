@@ -1,9 +1,9 @@
 {{--
 ==============================================================================
-Tujuan: Layout utama aplikasi Portal Guru (Sidebar, Topbar, Content, Flash Alert).
+Tujuan: Layout utama aplikasi Portal Guru (Sidebar Drawer Mobile, Topbar, Content, Flash Alert).
 Dipakai Oleh: Seluruh view dashboard Admin dan Guru (@extends('layouts.app'))
-Dependensi: Blade Templating Engine, Auth facade
-Fungsi Utama: Render kerangka HTML, styling UI terintegrasi, dan navigasi adaptif role
+Dependensi: Blade Templating Engine, Auth facade, Carbon
+Fungsi Utama: Render kerangka HTML responsif mobile & desktop, navigasi drawer adaptif, flash alert
 Side Effect: Menampilkan layout UI dan identitas pengguna yang sedang login
 ==============================================================================
 --}}
@@ -437,6 +437,219 @@ Side Effect: Menampilkan layout UI dan identitas pengguna yang sedang login
             font-size: 0.85rem;
         }
 
+        /* Sidebar Backdrop Overlay */
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(3px);
+            z-index: 45;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .sidebar-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar-close-btn {
+            display: none;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .hamburger-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-main);
+            flex-shrink: 0;
+            line-height: 1;
+            transition: all 0.15s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        /* Mobile & Tablet Responsive Rules */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: min(280px, 85vw);
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 50;
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-brand {
+                justify-content: space-between;
+                padding: 18px 16px;
+            }
+
+            .sidebar-close-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 34px;
+                height: 34px;
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                border-radius: 8px;
+                color: #cbd5e1;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+
+            .sidebar-close-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: #ffffff;
+            }
+
+            .hamburger-btn {
+                display: inline-flex;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .topbar {
+                padding: 0 16px;
+                height: 56px;
+            }
+
+            .topbar-title {
+                font-size: 1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .topbar-date {
+                display: none;
+            }
+
+            .content {
+                padding: 16px 12px;
+            }
+
+            .card {
+                border-radius: 10px;
+                margin-bottom: 16px;
+            }
+
+            .card-header {
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .card-header > form,
+            .card-header > div,
+            .card-header > a,
+            .card-header > button {
+                width: 100%;
+                max-width: 100% !important;
+            }
+
+            .card-header form {
+                flex-wrap: wrap;
+            }
+
+            .card-body {
+                padding: 16px;
+            }
+
+            .grid-4,
+            .grid-3,
+            .grid-2 {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-value {
+                font-size: 1.4rem;
+            }
+
+            /* Mencegah auto-zoom di browser iOS Safari dengan font-size min 16px */
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            input[type="date"],
+            select,
+            textarea {
+                font-size: 16px !important;
+                padding: 10px 12px;
+                min-height: 42px;
+            }
+
+            .btn {
+                min-height: 40px;
+                font-size: 0.88rem;
+            }
+
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+            }
+
+            th, td {
+                padding: 10px 12px;
+                font-size: 0.82rem;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+                padding: 14px 16px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
         /* Print styling */
         @media print {
             .sidebar, .topbar, .no-print { display: none !important; }
@@ -447,11 +660,19 @@ Side Effect: Menampilkan layout UI dan identitas pengguna yang sedang login
     </style>
 </head>
 <body>
+    <!-- Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar no-print">
+    <aside class="sidebar no-print" id="sidebar">
         <div class="sidebar-brand">
-            <span class="icon">🎓</span>
-            <span>Portal Guru</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="icon">🎓</span>
+                <span>Portal Guru</span>
+            </div>
+            <button type="button" class="sidebar-close-btn" onclick="toggleSidebar(false)" aria-label="Tutup Menu">
+                ✕
+            </button>
         </div>
 
         <ul class="sidebar-menu">
@@ -528,9 +749,14 @@ Side Effect: Menampilkan layout UI dan identitas pengguna yang sedang login
     <!-- Main Content Wrapper -->
     <div class="main-wrapper">
         <header class="topbar no-print">
-            <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
+            <div class="topbar-left">
+                <button type="button" class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar(true)" aria-label="Buka Menu Navigasi">
+                    ☰
+                </button>
+                <div class="topbar-title">@yield('page-title', 'Dashboard')</div>
+            </div>
             <div class="topbar-actions">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                <span class="topbar-date" style="font-size: 0.85rem; color: var(--text-muted);">
                     📅 {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                 </span>
             </div>
@@ -563,5 +789,41 @@ Side Effect: Menampilkan layout UI dan identitas pengguna yang sedang login
             @yield('content')
         </main>
     </div>
+
+    <script>
+        function toggleSidebar(open) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+
+            const isOpen = typeof open === 'boolean' ? open : !sidebar.classList.contains('open');
+
+            if (isOpen) {
+                sidebar.classList.add('open');
+                backdrop.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Tutup sidebar saat menekan tombol Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                toggleSidebar(false);
+            }
+        });
+
+        // Tutup sidebar otomatis saat link navigasi di-klik pada layar kecil
+        document.querySelectorAll('.sidebar-menu a').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar(false);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 {{--
 ==============================================================================
-Tujuan: Formulir input presensi harian siswa per mapel dan kelas.
+Tujuan: Formulir input presensi harian siswa responsif mobile per mapel dan kelas.
 Dipakai Oleh: Guru\AttendanceController@show (Route /guru/attendances/{id})
 Dependensi: layouts.app, TeachingAssignment, Attendance, Student
-Fungsi Utama: Pemilihan tanggal, batch update status presensi (hadir/izin/sakit/alpa)
+Fungsi Utama: Pemilihan tanggal, batch update status presensi touch-friendly (hadir/izin/sakit/alpa)
 Side Effect: Simpan/update data presensi ke tabel attendances
 ==============================================================================
 --}}
@@ -13,6 +13,45 @@ Side Effect: Simpan/update data presensi ke tabel attendances
 @section('page-title', 'Presensi: ' . $assignment->subject->name . ' (' . $assignment->classroom->name . ')')
 
 @section('content')
+<style>
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        font-weight: 600;
+        user-select: none;
+        transition: all 0.15s ease;
+    }
+    .status-pill:hover {
+        background: #f1f5f9;
+    }
+    @media (max-width: 768px) {
+        .attendance-toolbar {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .attendance-toolbar form,
+        .attendance-toolbar div,
+        .attendance-toolbar button {
+            width: 100%;
+        }
+        .card-footer-action {
+            flex-direction: column;
+            align-items: stretch !important;
+            text-align: center;
+            padding: 16px !important;
+        }
+        .card-footer-action button {
+            width: 100%;
+        }
+    }
+</style>
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 16px;">
         <div>
@@ -21,7 +60,7 @@ Side Effect: Simpan/update data presensi ke tabel attendances
                 Tahun Ajaran: {{ $assignment->academic_year }} | Semester: {{ ucfirst($assignment->semester) }}
             </p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
             <a href="{{ route('guru.attendance.recap', $assignment->id) }}" class="btn btn-secondary btn-sm">
                 📊 Rekap Semester
             </a>
@@ -32,10 +71,10 @@ Side Effect: Simpan/update data presensi ke tabel attendances
     </div>
 
     <!-- Filter Tanggal Presensi -->
-    <div style="padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-        <form action="{{ route('guru.attendance.show', $assignment->id) }}" method="GET" style="display: flex; align-items: center; gap: 12px;">
-            <label for="date" style="margin-bottom: 0; font-size: 0.88rem;">📅 Tanggal Presensi:</label>
-            <input type="date" id="date" name="date" value="{{ $date }}" style="width: auto; padding: 6px 12px;" onchange="this.form.submit()">
+    <div class="attendance-toolbar" style="padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <form action="{{ route('guru.attendance.show', $assignment->id) }}" method="GET" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <label for="date" style="margin-bottom: 0; font-size: 0.88rem; white-space: nowrap;">📅 Tanggal Presensi:</label>
+            <input type="date" id="date" name="date" value="{{ $date }}" style="width: auto; padding: 7px 12px;" onchange="this.form.submit()">
             <button type="submit" class="btn btn-secondary btn-sm">Pilih Tanggal</button>
         </form>
 
@@ -58,8 +97,8 @@ Side Effect: Simpan/update data presensi ke tabel attendances
                         <th style="width: 140px;">NIS</th>
                         <th>Nama Siswa</th>
                         <th>L/P</th>
-                        <th style="width: 320px; text-align: center;">Status Kehadiran</th>
-                        <th>Catatan (Opsional)</th>
+                        <th style="min-width: 330px; text-align: center;">Status Kehadiran</th>
+                        <th style="min-width: 200px;">Catatan (Opsional)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,22 +119,22 @@ Side Effect: Simpan/update data presensi ke tabel attendances
                                 </span>
                             </td>
                             <td>
-                                <div style="display: flex; justify-content: center; gap: 14px; font-size: 0.85rem;">
-                                    <label style="display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                <div style="display: flex; justify-content: center; gap: 8px; font-size: 0.85rem; flex-wrap: wrap;">
+                                    <label class="status-pill">
                                         <input type="radio" name="attendance[{{ $student->id }}][status]" value="hadir" class="status-radio-hadir" {{ $currentStatus === 'hadir' ? 'checked' : '' }}>
-                                        <span style="color: #16a34a; font-weight: 600;">Hadir</span>
+                                        <span style="color: #16a34a;">Hadir</span>
                                     </label>
-                                    <label style="display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                    <label class="status-pill">
                                         <input type="radio" name="attendance[{{ $student->id }}][status]" value="izin" class="status-radio-izin" {{ $currentStatus === 'izin' ? 'checked' : '' }}>
-                                        <span style="color: #0284c7; font-weight: 600;">Izin</span>
+                                        <span style="color: #0284c7;">Izin</span>
                                     </label>
-                                    <label style="display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                    <label class="status-pill">
                                         <input type="radio" name="attendance[{{ $student->id }}][status]" value="sakit" class="status-radio-sakit" {{ $currentStatus === 'sakit' ? 'checked' : '' }}>
-                                        <span style="color: #d97706; font-weight: 600;">Sakit</span>
+                                        <span style="color: #d97706;">Sakit</span>
                                     </label>
-                                    <label style="display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                    <label class="status-pill">
                                         <input type="radio" name="attendance[{{ $student->id }}][status]" value="alpa" class="status-radio-alpa" {{ $currentStatus === 'alpa' ? 'checked' : '' }}>
-                                        <span style="color: #dc2626; font-weight: 600;">Alpa</span>
+                                        <span style="color: #dc2626;">Alpa</span>
                                     </label>
                                 </div>
                             </td>
@@ -115,7 +154,7 @@ Side Effect: Simpan/update data presensi ke tabel attendances
         </div>
 
         @if($students->isNotEmpty())
-            <div style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-footer-action" style="padding: 18px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <span style="font-size: 0.85rem; color: var(--text-muted);">
                     Menampilkan {{ $students->count() }} siswa terdaftar di kelas {{ $assignment->classroom->name }}.
                 </span>

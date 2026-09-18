@@ -74,8 +74,8 @@ class AcademicSeeder extends Seeder
         $mapelFis = Subject::firstOrCreate(['code' => 'FIS-10'], ['name' => 'Fisika Dasar']);
         $mapelBin = Subject::firstOrCreate(['code' => 'BIN-10'], ['name' => 'Bahasa Indonesia']);
 
-        // 5. Buat Penugasan Guru (Satu guru mengajar mapel di beberapa kelas)
-        // Siti Aminah mengajar Matematika di X-IPA-1 dan X-IPA-2
+        // 5. Buat Penugasan Guru (Satu guru mengajar beberapa mapel di beberapa kelas)
+        // Siti Aminah mengajar Matematika di X-IPA-1 & X-IPA-2, dan Fisika di X-IPA-2
         $assignMat1 = TeachingAssignment::firstOrCreate([
             'teacher_id' => $guru1->id,
             'classroom_id' => $kelas1->id,
@@ -92,11 +92,27 @@ class AcademicSeeder extends Seeder
             'semester' => 'ganjil',
         ]);
 
-        // Bambang Hidayat mengajar Fisika di X-IPA-1
+        $assignFis2 = TeachingAssignment::firstOrCreate([
+            'teacher_id' => $guru1->id,
+            'classroom_id' => $kelas2->id,
+            'subject_id' => $mapelFis->id,
+            'academic_year' => '2026/2027',
+            'semester' => 'ganjil',
+        ]);
+
+        // Bambang Hidayat mengajar Fisika di X-IPA-1 dan Bahasa Indonesia di XI-IPA-1
         $assignFis1 = TeachingAssignment::firstOrCreate([
             'teacher_id' => $guru2->id,
             'classroom_id' => $kelas1->id,
             'subject_id' => $mapelFis->id,
+            'academic_year' => '2026/2027',
+            'semester' => 'ganjil',
+        ]);
+
+        $assignBin3 = TeachingAssignment::firstOrCreate([
+            'teacher_id' => $guru2->id,
+            'classroom_id' => $kelas3->id,
+            'subject_id' => $mapelBin->id,
             'academic_year' => '2026/2027',
             'semester' => 'ganjil',
         ]);

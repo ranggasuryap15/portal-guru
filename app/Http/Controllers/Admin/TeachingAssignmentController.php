@@ -2,7 +2,7 @@
 
 /**
  * ==============================================================================
- * Tujuan: Controller Penugasan Mengajar (Assign Guru ke Mapel dan Kelas) oleh Administrator.
+ * Tujuan: Controller Penugasan Mengajar (Assign Guru ke Multi-Mapel dan Multi-Kelas) oleh Administrator.
  * Dipakai Oleh: routes/web.php (Route /admin/assignments/*)
  * Dependensi: App\Models\TeachingAssignment, User, Classroom, Subject
  * Daftar Fungsi: index(), create(), store(), destroy()
@@ -49,49 +49,51 @@ class TeachingAssignmentController extends Controller
     }
 
     /**
-     * Simpan penugasan guru ke mapel dan kelas (bisa multi-kelas sekaligus).
+     * Simpan penugasan guru ke mapel dan kelas (mendukung multi-mapel dan multi-kelas sekaligus).
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'teacher_id' => ['required', 'exists:users,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
+            'subject_ids' => ['required_without:subject_id', 'array', 'min:1'],
+            'subject_ids.*' => ['exists:subjects,id'],
+            'subject_id' => ['nullable', 'exists:subjects,id'],
             'classroom_ids' => ['required', 'array', 'min:1'],
             'classroom_ids.*' => ['required', 'exists:classrooms,id'],
             'academic_year' => ['required', 'string', 'max:20'],
             'semester' => ['required', 'in:ganjil,genap'],
         ], [
             'teacher_id.required' => 'Pilih guru pengampu.',
-            'subject_id.required' => 'Pilih mata pelajaran.',
+            'subject_ids.required_without' => 'Pilih minimal satu mata pelajaran.',
             'classroom_ids.required' => 'Pilih minimal satu kelas.',
             'semester.required' => 'Pilih semester.',
         ]);
 
+        $subjectIds = $request->input('subject_ids', []);
+        if (empty($subjectIds) && $request->filled('subject_id')) {
+            $subjectIds = [$request->input('subject_id')];
+        }
+
         $createdCount = 0;
 
-        foreach ($validated['classroom_ids'] as $classroomId) {
-            $exists = TeachingAssignment::where([
-                'teacher_id' => $validated['teacher_id'],
-                'classroom_id' => $classroomId,
-                'subject_id' => $validated['subject_id'],
-                'academic_year' => $validated['academic_year'],
-                'semester' => $validated['semester'],
-            ])->exists();
-
-            if (! $exists) {
-                TeachingAssignment::create([
+        foreach ($subjectIds as $subjectId) {
+            foreach ($validated['classroom_ids'] as $classroomId) {
+                $assignment = TeachingAssignment::firstOrCreate([
                     'teacher_id' => $validated['teacher_id'],
                     'classroom_id' => $classroomId,
-                    'subject_id' => $validated['subject_id'],
+                    'subject_id' => $subjectId,
                     'academic_year' => $validated['academic_year'],
                     'semester' => $validated['semester'],
                 ]);
-                $createdCount++;
+
+                if ($assignment->wasRecentlyCreated) {
+                    $createdCount++;
+                }
             }
         }
 
         return redirect()->route('admin.assignments.index')
-            ->with('success', "Berhasil mendaftarkan guru ke {$createdCount} kelas penugasan.");
+            ->with('success', "Berhasil mendaftarkan penugasan guru ({$createdCount} jadwal baru dibuat).");
     }
 
     /**

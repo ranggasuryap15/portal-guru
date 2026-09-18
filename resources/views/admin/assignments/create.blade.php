@@ -1,16 +1,16 @@
 {{--
 ==============================================================================
-Tujuan: Halaman formulir pendaftaran guru ke mata pelajaran dan beberapa kelas sekaligus.
+Tujuan: Halaman formulir pendaftaran guru ke beberapa mata pelajaran dan beberapa kelas sekaligus.
 Dipakai Oleh: Admin\TeachingAssignmentController@create (Route /admin/assignments/create)
 Dependensi: layouts.app, User, Classroom, Subject
-Fungsi Utama: Pemilihan guru, mapel, multi-pilihan kelas, tahun ajaran, dan semester
+Fungsi Utama: Pemilihan guru, multi-pilihan mapel, multi-pilihan kelas, tahun ajaran, dan semester
 Side Effect: Pengiriman data POST ke /admin/assignments
 ==============================================================================
 --}}
 @extends('layouts.app')
 
 @section('title', 'Daftarkan Guru ke Mapel & Kelas')
-@section('page-title', 'Formulir Penugasan Guru ke Mata Pelajaran')
+@section('page-title', 'Formulir Penugasan Guru ke Mata Pelajaran & Kelas')
 
 @section('content')
 <div style="max-width: 720px;">
@@ -19,7 +19,7 @@ Side Effect: Pengiriman data POST ke /admin/assignments
             <div>
                 <h3>Penugasan Guru ke Mapel & Kelas</h3>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
-                    Pilih guru pengampu, mata pelajaran, dan centang satu atau lebih kelas yang akan diajar.
+                    Pilih guru pengampu, centang satu atau lebih mata pelajaran, dan centang satu atau lebih kelas yang akan diajar.
                 </p>
             </div>
             <a href="{{ route('admin.assignments.index') }}" class="btn btn-secondary btn-sm">⬅ Kembali</a>
@@ -41,15 +41,19 @@ Side Effect: Pengiriman data POST ke /admin/assignments
                 </div>
 
                 <div class="form-group">
-                    <label for="subject_id">Pilih Mata Pelajaran <span style="color: var(--danger);">*</span></label>
-                    <select id="subject_id" name="subject_id" required>
-                        <option value="">-- Pilih Mata Pelajaran --</option>
-                        @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                [{{ $subject->code }}] {{ $subject->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <label style="margin-bottom: 10px;">Pilih Mata Pelajaran yang Diampu (Dapat memilih lebih dari satu) <span style="color: var(--danger);">*</span></label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        @forelse($subjects as $subject)
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                <input type="checkbox" name="subject_ids[]" value="{{ $subject->id }}" {{ (is_array(old('subject_ids')) && in_array($subject->id, old('subject_ids'))) || old('subject_id') == $subject->id ? 'checked' : '' }} style="width: auto;">
+                                <span><span class="badge badge-info" style="font-size: 0.72rem;">{{ $subject->code }}</span> <strong>{{ $subject->name }}</strong></span>
+                            </label>
+                        @empty
+                            <div style="color: var(--text-muted); font-size: 0.85rem; grid-column: 1/-1;">
+                                Belum ada data mata pelajaran. Silakan <a href="{{ route('admin.subjects.create') }}">tambahkan mata pelajaran terlebih dahulu</a>.
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
 
                 <div class="form-group">

@@ -1,9 +1,9 @@
 {{--
 ==============================================================================
-Tujuan: Formulir input nilai 4 Ulangan Harian & Ujian dengan rumus 60% UH + 40% Ujian.
+Tujuan: Formulir input nilai 4 Ulangan Harian & Ujian responsif mobile (60% UH + 40% Ujian).
 Dipakai Oleh: Guru\GradeController@edit (Route /guru/grades/{id})
 Dependensi: layouts.app, TeachingAssignment, Grade, Student
-Fungsi Utama: Input form batch UH 1-4 & Ujian, kalkulasi real-time nilai akhir
+Fungsi Utama: Input form batch UH 1-4 & Ujian touch-friendly, kalkulasi real-time nilai akhir
 Side Effect: Simpan/update nilai ke tabel grades
 ==============================================================================
 --}}
@@ -13,6 +13,23 @@ Side Effect: Simpan/update nilai ke tabel grades
 @section('page-title', 'Penilaian: ' . $assignment->subject->name . ' (' . $assignment->classroom->name . ')')
 
 @section('content')
+<style>
+    .score-input {
+        min-width: 68px;
+    }
+    @media (max-width: 768px) {
+        .card-footer-action {
+            flex-direction: column;
+            align-items: stretch !important;
+            text-align: center;
+            padding: 16px !important;
+        }
+        .card-footer-action button {
+            width: 100%;
+        }
+    }
+</style>
+
 <div class="card">
     <div class="card-header" style="flex-wrap: wrap; gap: 16px;">
         <div>
@@ -21,7 +38,7 @@ Side Effect: Simpan/update nilai ke tabel grades
                 Formula Perhitungan: <strong>Nilai Akhir = (60% × Rata-rata 4 UH) + (40% × Nilai Ujian)</strong>
             </p>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <a href="{{ route('guru.grades.recap', $assignment->id) }}" class="btn btn-secondary btn-sm">
                 📈 Leger Nilai
             </a>
@@ -41,7 +58,7 @@ Side Effect: Simpan/update nilai ke tabel grades
                     <tr>
                         <th style="width: 45px;">No</th>
                         <th style="width: 130px;">NIS</th>
-                        <th>Nama Lengkap Siswa</th>
+                        <th style="min-width: 180px;">Nama Lengkap Siswa</th>
                         <th style="width: 105px; text-align: center;">UH 1 (0-100)</th>
                         <th style="width: 105px; text-align: center;">UH 2 (0-100)</th>
                         <th style="width: 105px; text-align: center;">UH 3 (0-100)</th>
@@ -70,22 +87,22 @@ Side Effect: Simpan/update nilai ke tabel grades
                                 <div style="font-weight: 600;">{{ $student->name }}</div>
                             </td>
                             <td>
-                                <input type="number" step="0.01" min="0" max="100" name="grades[{{ $student->id }}][uh1]" value="{{ $uh1 }}" class="score-input input-uh1" style="text-align: center; padding: 6px 4px;">
+                                <input type="number" step="0.01" min="0" max="100" inputmode="decimal" name="grades[{{ $student->id }}][uh1]" value="{{ $uh1 }}" class="score-input input-uh1" style="text-align: center; padding: 6px 4px;">
                             </td>
                             <td>
-                                <input type="number" step="0.01" min="0" max="100" name="grades[{{ $student->id }}][uh2]" value="{{ $uh2 }}" class="score-input input-uh2" style="text-align: center; padding: 6px 4px;">
+                                <input type="number" step="0.01" min="0" max="100" inputmode="decimal" name="grades[{{ $student->id }}][uh2]" value="{{ $uh2 }}" class="score-input input-uh2" style="text-align: center; padding: 6px 4px;">
                             </td>
                             <td>
-                                <input type="number" step="0.01" min="0" max="100" name="grades[{{ $student->id }}][uh3]" value="{{ $uh3 }}" class="score-input input-uh3" style="text-align: center; padding: 6px 4px;">
+                                <input type="number" step="0.01" min="0" max="100" inputmode="decimal" name="grades[{{ $student->id }}][uh3]" value="{{ $uh3 }}" class="score-input input-uh3" style="text-align: center; padding: 6px 4px;">
                             </td>
                             <td>
-                                <input type="number" step="0.01" min="0" max="100" name="grades[{{ $student->id }}][uh4]" value="{{ $uh4 }}" class="score-input input-uh4" style="text-align: center; padding: 6px 4px;">
+                                <input type="number" step="0.01" min="0" max="100" inputmode="decimal" name="grades[{{ $student->id }}][uh4]" value="{{ $uh4 }}" class="score-input input-uh4" style="text-align: center; padding: 6px 4px;">
                             </td>
                             <td style="text-align: center; background: #f8fafc; font-weight: 600;">
                                 <span class="preview-avg-uh">{{ !is_null($avgUh) ? number_format($avgUh, 2) : '-' }}</span>
                             </td>
                             <td>
-                                <input type="number" step="0.01" min="0" max="100" name="grades[{{ $student->id }}][exam_score]" value="{{ $exam }}" class="score-input input-exam" style="text-align: center; padding: 6px 4px; border-color: #93c5fd;">
+                                <input type="number" step="0.01" min="0" max="100" inputmode="decimal" name="grades[{{ $student->id }}][exam_score]" value="{{ $exam }}" class="score-input input-exam" style="text-align: center; padding: 6px 4px; border-color: #93c5fd;">
                             </td>
                             <td style="text-align: center; background: #f0f9ff; font-weight: 700; font-size: 1rem; color: #0284c7;">
                                 <span class="preview-final-score">{{ !is_null($final) ? number_format($final, 2) : '-' }}</span>
@@ -103,7 +120,7 @@ Side Effect: Simpan/update nilai ke tabel grades
         </div>
 
         @if($students->isNotEmpty())
-            <div style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #ffffff;">
+            <div class="card-footer-action" style="padding: 18px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #ffffff; flex-wrap: wrap; gap: 12px;">
                 <div style="font-size: 0.85rem; color: var(--text-muted);">
                     💡 Nilai Akhir akan dihitung secara otomatis oleh sistem saat disimpan (60% Ulangan Harian + 40% Ujian).
                 </div>

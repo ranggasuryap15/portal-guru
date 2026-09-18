@@ -1,9 +1,9 @@
 {{--
 ==============================================================================
-Tujuan: Halaman daftar akun Guru dengan pencarian, pagination, dan aksi edit/reset password.
+Tujuan: Halaman daftar akun Guru dengan pencarian, visualisasi multi-mapel, dan aksi edit.
 Dipakai Oleh: Admin\TeacherController@index (Route /admin/teachers)
-Dependensi: layouts.app, User model
-Fungsi Utama: Menampilkan tabel akun guru, search NIP/Nama, tombol aksi
+Dependensi: layouts.app, User model, Subject model
+Fungsi Utama: Menampilkan tabel akun guru, daftar mapel diampu, search NIP/Nama, tombol aksi
 Side Effect: Menampilkan list user role guru
 ==============================================================================
 --}}
@@ -34,7 +34,7 @@ Side Effect: Menampilkan list user role guru
                     <th>Nama Lengkap</th>
                     <th>Email</th>
                     <th>No. Telepon</th>
-                    <th>Total Penugasan</th>
+                    <th>Mata Pelajaran & Penugasan</th>
                     <th style="text-align: right;">Aksi</th>
                 </tr>
             </thead>
@@ -50,7 +50,22 @@ Side Effect: Menampilkan list user role guru
                         <td>{{ $teacher->email }}</td>
                         <td>{{ $teacher->phone ?? '-' }}</td>
                         <td>
-                            <span class="badge badge-info">{{ $teacher->teaching_assignments_count }} Mapel/Kelas</span>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <div>
+                                    <span class="badge badge-info">{{ $teacher->teaching_assignments_count }} Kelas</span>
+                                </div>
+                                @if($teacher->subjects->isNotEmpty())
+                                    <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                        @foreach($teacher->subjects as $subject)
+                                            <span class="badge badge-secondary" style="font-size: 0.72rem;" title="{{ $subject->name }}">
+                                                {{ $subject->code }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span style="font-size: 0.78rem; color: var(--text-muted);">Belum ada mapel</span>
+                                @endif
+                            </div>
                         </td>
                         <td style="text-align: right;">
                             <div style="display: inline-flex; gap: 6px;">

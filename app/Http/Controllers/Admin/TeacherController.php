@@ -2,7 +2,7 @@
 
 /**
  * ==============================================================================
- * Tujuan: Controller CRUD Akun Guru dan Reset Password oleh Administrator.
+ * Tujuan: Controller CRUD Akun Guru, Relasi Multi-Mapel, dan Reset Password oleh Administrator.
  * Dipakai Oleh: routes/web.php (Route /admin/teachers/*)
  * Dependensi: App\Models\User, Hash
  * Daftar Fungsi: index(), create(), store(), edit(), update(), updatePassword(), destroy()
@@ -37,6 +37,7 @@ class TeacherController extends Controller
                         ->orWhere('nip', 'like', "%{$search}%");
                 });
             })
+            ->with('subjects')
             ->withCount('teachingAssignments')
             ->latest()
             ->paginate(10)
@@ -119,7 +120,7 @@ class TeacherController extends Controller
         $teacher->update($validated);
 
         return redirect()->route('admin.teachers.index')
-            ->with('success', 'Data guru ' . $teacher->name . ' berhasil diperbarui.');
+            ->with('success', 'Data guru '.$teacher->name.' berhasil diperbarui.');
     }
 
     /**
@@ -141,7 +142,7 @@ class TeacherController extends Controller
             'password' => Hash::make($validated['new_password']),
         ]);
 
-        return back()->with('success', 'Password guru ' . $teacher->name . ' berhasil diperbarui.');
+        return back()->with('success', 'Password guru '.$teacher->name.' berhasil diperbarui.');
     }
 
     /**
@@ -155,6 +156,6 @@ class TeacherController extends Controller
         $teacher->delete();
 
         return redirect()->route('admin.teachers.index')
-            ->with('success', 'Akun guru ' . $name . ' berhasil dihapus.');
+            ->with('success', 'Akun guru '.$name.' berhasil dihapus.');
     }
 }
